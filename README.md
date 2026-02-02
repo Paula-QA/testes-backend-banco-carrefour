@@ -26,37 +26,57 @@ Validar o fluxo completo de **gestão de usuários e autenticação**, garantind
 
 ---
 
+
 ## 🔄 Estratégia de Testes
 
-- O usuário é **criado dinamicamente**
+- Usuários são **criados dinamicamente**
 - O **ID**, **email** e **senha** são armazenados em variáveis de ambiente
 - Esses dados são reutilizados nos testes de:
   - login
   - consulta
   - edição
   - exclusão
-- A estratégia garante:
-  - reexecução segura
-  - independência de dados fixos
-  - validação de ponta a ponta
+- Após a exclusão, são executados **cenários negativos** para validar:
+  - consistência dos dados
+  - tratamento correto de erros
+  - segurança do fluxo de autenticação
 
 ---
 
 ## 🧪 Cenários Cobertos
 
-### 🔹 Usuário
+### 🔹 Usuário (CRUD)
+
 - Criação de usuário  
 - Consulta de usuário por ID  
-- Validação da criação  
+- Validação da criação do usuário  
 - Edição de usuário  
-- Validação da edição  
+- Validação da edição do usuário  
 - Exclusão de usuário  
-- Validação da exclusão  
+- Validação da exclusão do usuário  
+
+---
+
+### 🔹 Usuário Deletado – Cenários Negativos
+
+- Consulta de usuário deletado  
+  - Resultado esperado: **Usuário não encontrado (400)**
+
+- Login com usuário deletado  
+  - Resultado esperado: **Erro de autenticação (401)**
+
+Esses cenários validam que a API mantém a integridade e não permite acesso ou consulta a recursos removidos.
+
+---
 
 ### 🔹 Login – Cenários Positivos
+
 - Login realizado com sucesso com usuário criado dinamicamente  
 
+---
+
 ### 🔹 Login – Cenários Negativos
+
 - Login com senha inválida  
 - Login com e-mail inexistente  
 - Login sem e-mail  
@@ -66,7 +86,7 @@ Validar o fluxo completo de **gestão de usuários e autenticação**, garantind
 
 ## 🌱 Environment do Postman
 
-O projeto utiliza um **environment versionado** para armazenar variáveis dinâmicas e garantir a correta execução dos testes.
+O projeto utiliza um **environment versionado** para armazenar variáveis dinâmicas e permitir a correta execução dos testes.
 
 ### Variáveis utilizadas
 
