@@ -1,0 +1,599 @@
+{
+  "info": {
+    "_postman_id": "9487e0b6-f159-4ca3-8876-296a81d61af5",
+    "name": "Testes de Back-end Banco Carrefour",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "39691780"
+  },
+  "item": [
+    {
+      "name": "TC - 0001 Criação de Usuário",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Usuário criado com sucesso\", function () {\r",
+              "    pm.response.to.have.status(201);\r",
+              "});\r",
+              "\r",
+              "// Captura a resposta\r",
+              "let response = pm.response.json();\r",
+              "\r",
+              "// Salva o ID do usuário\r",
+              "pm.environment.set(\"userId\", response._id);\r",
+              "\r",
+              "// Salva dados para login\r",
+              "pm.environment.set(\"loginEmail\", pm.request.body.raw.match(/\"email\":\\s*\"([^\"]+)\"/)[1]);\r",
+              "pm.environment.set(\"loginPassword\", \"123456\");"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "let counter = pm.environment.get(\"userCounter\");\r",
+              "\r",
+              "// Se não existir, inicializa\r",
+              "if (!counter) {\r",
+              "    counter = 0;\r",
+              "}\r",
+              "\r",
+              "counter = parseInt(counter) + 1;\r",
+              "\r",
+              "// Formata com dois dígitos (01, 02, 03...)\r",
+              "let formattedCounter = counter.toString().padStart(2, '0');\r",
+              "\r",
+              "// Salva novamente no ambiente\r",
+              "pm.environment.set(\"userCounter\", counter);\r",
+              "pm.environment.set(\"userSuffix\", formattedCounter);\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"nome\": \"Paula QA {{userSuffix}} \",\r\n  \"email\": \"paula.qa+1@teste.com\",\r\n  \"password\": \"123456\",\r\n  \"administrador\": \"true\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{carrefour_api}}/usuarios",
+          "host": [
+            "{{carrefour_api}}"
+          ],
+          "path": [
+            "usuarios"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC - 0002 Login realizado com sucesso com usuário criado",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Login realizado com sucesso com usuário criado\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "    pm.expect(pm.response.json()).to.have.property(\"authorization\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"{{loginEmail}}\",\r\n  \"password\": \"{{loginPassword}}\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{carrefour_api}}/login",
+          "host": [
+            "{{carrefour_api}}"
+          ],
+          "path": [
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC - 0003  Login com senha inválida",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Erro ao logar com senha inválida\", function () {\r",
+              "    pm.response.to.have.status(401);\r",
+              "    pm.expect(pm.response.json().message).to.include(\"Email e/ou senha inválidos\");\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"{{loginEmail}}\",\r\n  \"password\": \"senha_errada\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{carrefour_api}}/login",
+          "host": [
+            "{{carrefour_api}}"
+          ],
+          "path": [
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC - 0004  Login com e-mail inexistente",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Erro ao logar com senha inválida\", function () {\r",
+              "    pm.response.to.have.status(401);\r",
+              "    pm.expect(pm.response.json().message).to.include(\"Email e/ou senha inválidos\");\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"inexistente@teste.com\",\r\n  \"password\": \"123456\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{carrefour_api}}/login",
+          "host": [
+            "{{carrefour_api}}"
+          ],
+          "path": [
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC - 0005  Login sem e-mail",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Erro ao logar sem email\", function () {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"password\": \"123456\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{carrefour_api}}/login",
+          "host": [
+            "{{carrefour_api}}"
+          ],
+          "path": [
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC - 0006  Login sem senha",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Erro ao logar sem email\", function () {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"{{loginEmail}}\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{carrefour_api}}/login",
+          "host": [
+            "{{carrefour_api}}"
+          ],
+          "path": [
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC - 0007 Consultar usuário por Id",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Consulta usuário por ID\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "    pm.expect(pm.response.json()).to.have.property(\"nome\");\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{carrefour_api}}/usuarios/{{userId}}",
+          "host": [
+            "{{carrefour_api}}"
+          ],
+          "path": [
+            "usuarios",
+            "{{userId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC - 0008 Verificação da criação do usuário",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Lista de usuários retornada\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "    pm.expect(pm.response.json().usuarios).to.be.an(\"array\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{carrefour_api}}usuarios",
+          "host": [
+            "{{carrefour_api}}usuarios"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC - 0009 Edição de usuário com sucesso",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Usuário atualizado com sucesso\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"nome\": \"Paula QA Atualizada\",\r\n  \"email\": \"paula.qa@teste.com\",\r\n  \"password\": \"123456\",\r\n  \"administrador\": \"true\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{carrefour_api}}usuarios/{{userId}}",
+          "host": [
+            "{{carrefour_api}}usuarios"
+          ],
+          "path": [
+            "{{userId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC - 0010 Verificação de Edição do nome do usuário  foi feita com sucesso",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{carrefour_api}}usuarios/{{userId}}",
+          "host": [
+            "{{carrefour_api}}usuarios"
+          ],
+          "path": [
+            "{{userId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC - 0012 Realizar a deleção do usuário com sucesso",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Usuário removido com sucesso\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{carrefour_api}}usuarios/{{userId}}",
+          "host": [
+            "{{carrefour_api}}usuarios"
+          ],
+          "path": [
+            "{{userId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC - 0013 Verificação se o usuário foi deletado com corretamente",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Usuário não encontrado após deleção\", function () {\r",
+              "    pm.response.to.have.status(400);\r",
+              "    pm.expect(pm.response.json().message).to.include(\"Usuário não encontrado\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{carrefour_api}}usuarios/{{userId}}",
+          "host": [
+            "{{carrefour_api}}usuarios"
+          ],
+          "path": [
+            "{{userId}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
