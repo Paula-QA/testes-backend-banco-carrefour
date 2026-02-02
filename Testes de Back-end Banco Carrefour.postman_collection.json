@@ -64,7 +64,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"nome\": \"Paula QA {{userSuffix}} \",\r\n  \"email\": \"paula.qa+1@teste.com\",\r\n  \"password\": \"123456\",\r\n  \"administrador\": \"true\"\r\n}",
+          "raw": "{\r\n  \"nome\": \"Paula QA {{userSuffix}} \",\r\n  \"email\": \"paula.qa{{userSuffix}}@teste.com\",\r\n  \"password\": \"123456\",\r\n  \"administrador\": \"true\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -453,7 +453,15 @@
               "});"
             ],
             "type": "text/javascript",
-            "packages": {}
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [],
+            "type": "text/javascript"
           }
         }
       ],
@@ -462,7 +470,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"nome\": \"Paula QA Atualizada\",\r\n  \"email\": \"paula.qa@teste.com\",\r\n  \"password\": \"123456\",\r\n  \"administrador\": \"true\"\r\n}\r\n",
+          "raw": "{\r\n  \"nome\": \"Paula QA Atualizada\",\r\n  \"email\": \"paula.qa{{userSuffix}}@teste.com\",\r\n  \"password\": \"123456\",\r\n  \"administrador\": \"true\"\r\n}\r\n",
           "options": {
             "raw": {
               "language": "json"
@@ -589,6 +597,61 @@
             "{{carrefour_api}}usuarios"
           ],
           "path": [
+            "{{userId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC - 0014 Login com usuário deletado",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Erro ao logar com usuário deletado\", function () {\r",
+              "    pm.response.to.have.status(405);\r",
+              "   \r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"{{loginEmail}}\",\r\n  \"password\": \"{{loginPassword}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{carrefour_api}}/usuarios/{{userId}}",
+          "host": [
+            "{{carrefour_api}}"
+          ],
+          "path": [
+            "usuarios",
             "{{userId}}"
           ]
         }
